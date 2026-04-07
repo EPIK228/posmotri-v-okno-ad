@@ -2,10 +2,8 @@ name: Tests
 
 on:
   push:
-    branches:
-      - '**'
-    tags:
-      - '**'
+    branches: [ '**' ]
+    tags: [ '**' ]
 
 jobs:
   tests:
@@ -13,10 +11,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
       - name: Check if the repository is private
-        run: exit 1
-        if: ${{github.event.repository.private}}
-      - name: Tests
+        run: |
+          if [[ "${{ github.event.repository.private }}" == "true" ]]; then
+            echo "Repository is private. Exiting."
+            exit 1
+          else
+            echo "Repository is public. Continuing..."
+          fi
+        shell: bash
+
+      - name: Run tests
         uses: Yandex-Practicum/test-project-action@v1
         with:
           project: 'posmotri-v-okno-ad'
